@@ -60,7 +60,8 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $category = Category::findOrFail($id);
+        return view('admin.categories.edit', compact('category'));
     }
 
     /**
@@ -68,7 +69,28 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $category = Category::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required|max:255|unique:categories,name,' . $category->category_id . ',category_id',
+        ], [
+            'name.required' => 'Tên danh mục không được để trống',
+            'name.unique' => 'Tên danh mục đã tồn tại',
+            'name.max' => 'Tên danh mục không được vượt quá 255 ký tự',
+        ]);
+
+        $category->update([
+            'name' => $request->name,
+            'slug' => \Illuminate\Support\Str::slug($request->name)
+        ]);
+
+        return redirect()->route('categories.index')->with('success', 'Cập nhật danh mục thành công');
+    }
+    public function toggleStatus($id) {
+        $category = Category::findOrFail($id);
+        $category->status = !$category->status;
+        $category->save();
+        return redirect()->route('categories.index')->with('success', 'Cập nhật trạng thái danh mục thành công');
     }
 
     /**

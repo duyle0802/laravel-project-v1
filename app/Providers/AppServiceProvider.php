@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Chia sẻ dữ liệu danh mục cho header layout (layout dùng chung ở mọi màn hình)
         View::composer('layouts.header', function ($view) {
-            $globalCategories = Category::all();
+            $globalCategories = Category::where('status', 1)->get();
             $view->with('globalCategories', $globalCategories);
         });
     }

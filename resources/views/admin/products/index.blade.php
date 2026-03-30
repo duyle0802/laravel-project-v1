@@ -106,9 +106,21 @@
                         
                         <!-- Cột Chức Năng (CRUD) -->
                         <td class="text-center">
-                            <div class="d-flex justify-content-center gap-2">
-                                <a href="#" class="btn btn-sm btn-dark border-secondary text-info hover-glow-info" title="Xem chi tiết (sẽ phát triển)"><i class="bi bi-eye"></i></a>
-                                <a href="#" class="btn btn-sm btn-dark border-secondary text-warning hover-glow-warning" title="Sửa (sẽ phát triển)"><i class="bi bi-pencil-square"></i></a>
+                            <div class="d-flex justify-content-center gap-1">
+                                <form action="{{ route('products.toggle-status', $product->product_id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    @if($product->status == 'active')
+                                        <button type="submit" class="btn btn-sm btn-dark border-secondary text-secondary" title="Tạm ẩn">
+                                            <i class="bi bi-eye-slash-fill"></i>
+                                        </button>
+                                    @else
+                                        <button type="submit" class="btn btn-sm btn-dark border-secondary text-success" title="Mở hiển thị">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </button>
+                                    @endif
+                                </form>
+                                <a href="{{ route('products.edit', $product->product_id) }}" class="btn btn-sm btn-dark border-secondary text-warning hover-glow-warning" title="Sửa"><i class="bi bi-pencil-square"></i></a>
                                 <form action="{{ route('products.destroy', $product->product_id) }}" method="POST" class="d-inline" onsubmit="return confirm('CẢNH BÁO MẤT DỮ LIỆU!\nBạn có chắn chắn muốn xóa sản phẩm này không?');">
                                     @csrf
                                     @method('DELETE')

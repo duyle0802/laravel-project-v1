@@ -28,7 +28,8 @@
                                 <th scope="col" width="5%" class="text-center text-laravel">#</th>
                                 <th scope="col" width="30%" class="text-laravel">Tên Danh Mục</th>
                                 <th scope="col" width="35%" class="text-laravel">Đường dẫn (Slug)</th>
-                                <th scope="col" width="15%" class="text-center text-laravel">Ngày tạo</th>
+                                <th scope="col" width="10%" class="text-center text-laravel">Ngày tạo</th>
+                                <th scope="col" width="10%" class="text-center text-laravel">Trạng thái</th>
                                 <th scope="col" width="15%" class="text-center text-laravel">Hành động</th>
                             </tr>
                         </thead>
@@ -40,14 +41,34 @@
                                     <td><span class="badge bg-secondary">{{ $item->slug }}</span></td>
                                     <td class="text-center text-secondary small">{{ $item->created_at ? $item->created_at->format('d/m/Y') : 'N/A' }}</td>
                                     <td class="text-center">
+                                        @if($item->status == 1)
+                                            <span class="badge bg-success-subtle text-success border border-success border-opacity-25 px-2 py-1"><i class="bi bi-eye-fill me-1"></i>Hiện</span>
+                                        @else
+                                            <span class="badge bg-secondary text-secondary border border-secondary border-opacity-25 px-2 py-1"><i class="bi bi-eye-slash-fill me-1"></i>Ẩn</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="#" class="btn btn-sm btn-outline-info" title="Sửa">
+                                            <form action="{{ route('categories.toggle-status', $item->category_id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                @if($item->status == 1)
+                                                    <button type="submit" class="btn btn-sm btn-outline-warning border-secondary" title="Tạm ẩn">
+                                                        <i class="bi bi-eye-slash-fill text-warning"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="submit" class="btn btn-sm btn-outline-success border-secondary" title="Mở hiển thị">
+                                                        <i class="bi bi-eye-fill text-success"></i>
+                                                    </button>
+                                                @endif
+                                            </form>
+                                            <a href="{{ route('categories.edit', $item->category_id) }}" class="btn btn-sm btn-outline-info" title="Sửa">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
-                                            <form action="#" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
+                                            <form action="{{ route('categories.destroy', $item->category_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button" class="btn btn-sm btn-outline-danger" title="Xóa" onclick="alert('Tính năng xóa chưa được kích hoạt ở Controller!')">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -56,7 +77,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center text-secondary py-4">
+                                    <td colspan="6" class="text-center text-secondary py-4">
                                         <i class="bi bi-inbox fs-1 d-block mb-3"></i>
                                         Chưa có danh mục nào. Hãy ấn <strong>Thêm Mới</strong> để tạo dữ liệu!
                                     </td>

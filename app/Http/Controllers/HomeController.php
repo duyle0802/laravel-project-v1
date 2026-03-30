@@ -10,23 +10,25 @@ class HomeController extends Controller
 {
     public function index() { 
         // Render tat ca danh muc
-        $categories = Category::with('products')->get();
+        $categories = Category::with(['products' => function($query) {
+            $query->where('status', 'active');
+        }])->where('status', 1)->get();
         //Render tat ca san pham
-        $products = Product::all();
+        $products = Product::where('status', 'active')->get();
         
         //6 San pham moi nhat
-        $newProducts = Product::orderBy('created_at', 'desc')->take(6)->get();
+        $newProducts = Product::where('status', 'active')->orderBy('created_at', 'desc')->take(6)->get();
 
         //6 San pham ban chay nhat
-        $bestSellingProducts = Product::orderBy('sold_count', 'desc')->take(6)->get();
+        $bestSellingProducts = Product::where('status', 'active')->orderBy('sold_count', 'desc')->take(6)->get();
 
         //6 San pham nhieu luot xem nhat
-        $viewedProducts = Product::orderBy('view_count', 'desc')->take(6)->get();
+        $viewedProducts = Product::where('status', 'active')->orderBy('view_count', 'desc')->take(6)->get();
         
         return view('home', compact('categories', 'newProducts', 'bestSellingProducts', 'viewedProducts'));   
     }
     public function show($id) {
-        $product = Product::findOrFail($id);
+        $product = Product::where('status', 'active')->findOrFail($id);
         
         // Tăng lượt xem (Tùy chọn, nếu muốn cập nhật db thêm lượt xem)
         // $product->increment('view_count');
@@ -34,6 +36,7 @@ class HomeController extends Controller
         // Lấy các sản phẩm cùng danh mục (loại trừ sản phẩm hiện tại)
         $relatedProducts = Product::where('category_id', $product->category_id)
                                  ->where('product_id', '!=', $id)
+                                 ->where('status', 'active')
                                  ->take(5)
                                  ->get();
                                  

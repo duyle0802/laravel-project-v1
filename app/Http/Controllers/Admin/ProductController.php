@@ -117,7 +117,10 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $product = Product::with(['images', 'variants.attributeValues.attribute'])->findOrFail($id);
+        $categories = Category::all();
+        
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     /**
@@ -125,7 +128,64 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $product = Product::with('images')->findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'required|exists:categories,category_id',
+            'description' => 'required',
+        ]);
+
+        if($request->hasFile('image')){
+            $path = $request->file('image')->store('products', 'public');
+            
+            if ($product->images->isNotEmpty()) {
+                $imageRecord = $product->images->first();
+                $imageRecord->update(['image_url' => $path]);
+            } else {
+                Image::create([
+                    'product_id' => $product->product_id,
+                    'image_url' => $path,
+                ]);
+            }
+        }
+
+        $product->update([
+            'category_id' => $data['category_id'],
+            'name' => $data['name'],
+            'description' => $data['description'],
+        ]);
+
+        if ($request->has('variants') && is_array($request->variants)) {
+            foreach($request->variants as $variantId => $variantData) {
+                $variant = ProductVariant::find($variantId);
+                if ($variant && $variant->product_id == $product->product_id) {
+                    $variant->update([
+                        'price' => $variantData['price'],
+                        'stock_quantity' => $variantData['stock'],
+                    ]);
+                }
+            }
+        } else {
+             $defaultVariant = $product->variants()->first();
+             if ($defaultVariant) {
+                 $defaultVariant->update([
+                     'price' => $request->price,
+                     'stock_quantity' => $request->stock,
+                 ]);
+             }
+        }
+
+        return redirect()->route('products.index')->with('success', 'Cập nhật sản phẩm thành công');
+    }
+    public function toggleStatus($id) {
+        $product = Product::findOrFail($id);
+        $product->status = ($product->status == 'active') ? 'inactive' : 'active';
+        $product->save();
+        return redirect()->route('products.index')->with('success', 'Cập nhật trạng thái sản phẩm thành công');
     }
 
     /**

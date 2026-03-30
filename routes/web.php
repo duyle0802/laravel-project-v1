@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\ProductController;
 Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/products', function () {
-    $products = \App\Models\Product::paginate(15);
+    $products = \App\Models\Product::where('status', 'active')->paginate(15);
     return view('products', [
         'products' => $products,
         'sale_status' => true
@@ -44,6 +44,8 @@ Route::get('/register', function() {
 //admin_route here
 Route::prefix('admin')->group(function() {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::patch('categories/{id}/toggle-status', [App\Http\Controllers\Admin\CategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
+    Route::patch('products/{id}/toggle-status', [App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('products.toggle-status');
     Route::resource('categories', CategoryController::class);
     Route::resource('products', ProductController::class);
     Route::get('categories/{id}/attributes', [App\Http\Controllers\Admin\ProductController::class, 'getAttributes'])->name('admin.categories.attributes');
