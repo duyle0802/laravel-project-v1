@@ -17,6 +17,7 @@ class User extends Authenticatable
         'password_hash',
         'full_name',
         'phone_number',
+        'role',
     ];
 
     protected $hidden = [
@@ -35,6 +36,11 @@ class User extends Authenticatable
     public function getAuthPasswordName()
     {
         return 'password_hash';
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
     }
 
     // Relationships

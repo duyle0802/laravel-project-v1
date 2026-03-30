@@ -1,10 +1,23 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 
+// ----- ROUTE BREEZE (AUTH) -----
+Route::redirect('/dashboard', '/admin')->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
+
+// ----- ROUTE FRONTEND (KHÁCH HÀNG) -----
 Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/products', function () {
@@ -33,16 +46,10 @@ Route::get('/checkout', function() {
     return view('checkout');
 });
 
-Route::get('/login', function() {
-    return view('login');
-});
+// Chú ý: Đã gỡ bỏ Route cũ của /login và /register vì gói Breeze đã tự động xử lý qua file auth.php
 
-Route::get('/register', function() {
-    return view('register');
-});
-
-//admin_route here
-Route::prefix('admin')->group(function() {
+// ----- ROUTE ADMIN -----
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function() {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
     Route::patch('categories/{id}/toggle-status', [App\Http\Controllers\Admin\CategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
     Route::patch('products/{id}/toggle-status', [App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('products.toggle-status');

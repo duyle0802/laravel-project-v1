@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-dark-custom navbar-dark border-bottom border-danger shadow-sm">
+<nav class="navbar navbar-expand-lg bg-dark-custom navbar-dark border-bottom border-danger shadow-sm position-relative" style="z-index: 1050;">
     <div class="container">
         <!-- Logo -->
         <a class="navbar-brand fw-bold fs-3 tech-logo" href="/">
@@ -66,7 +66,31 @@
                     </a>
                 </li>
                 <li class="nav-item ms-lg-4 mt-2 mt-lg-0">
-                    <a class="btn btn-outline-danger btn-sm rounded-pill px-4 py-2 tech-font-sm" style="letter-spacing: 0.5px;" href="/login">Đăng Nhập</a>
+                    @auth
+                        <div class="dropdown">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-4 py-2 tech-font-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="letter-spacing: 0.5px;">
+                                <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->full_name }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-dark-custom border-danger mt-2 shadow-lg">
+                                <li>
+                                    <a class="dropdown-item custom-hover tech-font-sm" href="{{ route('admin.dashboard') }}">
+                                        <i class="bi bi-speedometer2 me-2"></i> Bảng điều khiển
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item custom-hover tech-font-sm text-laravel">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @else
+                        <a class="btn btn-outline-danger btn-sm rounded-pill px-4 py-2 tech-font-sm" style="letter-spacing: 0.5px;" href="{{ route('login') }}">Đăng Nhập</a>
+                    @endauth
                 </li>
             </ul>
         </div>

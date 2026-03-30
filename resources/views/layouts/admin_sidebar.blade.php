@@ -132,10 +132,16 @@
     </ul>
 
     <!-- Return to Client App -->
-    <div class="mt-5 px-4 w-100 mb-4">
-        <hr class="border-secondary opacity-25">
-        <a href="{{ url('/') }}" class="btn btn-outline-danger w-100 btn-cyber-exit fw-bold py-2">
-            <i class="bi bi-door-open-fill me-2"></i>Thoát Khu Vực Mật
+    <div class="mt-5 px-4 w-100 mb-4 gap-2 d-flex flex-column">
+        <hr class="border-secondary opacity-25 mb-1 w-100">
+        <a href="{{ url('/') }}" class="btn btn-outline-info w-100 btn-cyber-exit fw-bold py-2">
+            <i class="bi bi-house-door-fill me-2"></i>Về Trang Chủ
         </a>
+        <form method="POST" action="{{ route('logout') }}" class="w-100 m-0">
+            @csrf
+            <button type="submit" class="btn btn-outline-danger w-100 btn-cyber-exit fw-bold py-2">
+                <i class="bi bi-box-arrow-right me-2"></i>Đăng Xuất
+            </button>
+        </form>
     </div>
 </div>
